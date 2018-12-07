@@ -65,11 +65,11 @@ def get_ei(path_to_rep,species,date):
   raw_data = temp_max.merge(temp_min,left_on='name',right_on='name')
   raw_data = raw_data.merge(precp,left_on='name',right_on='name')
 
+  param = {}
   name = np.array(raw_data['name'])
   tmax = np.array(raw_data[date+'_x'])
   tmin = np.array(raw_data[date+'_y'])
   precp = np.array(raw_data[date])
-
   ind = (tmax>=-100) * (tmin>=-100) * (precp>=-100)
 
   name = name[ind]
@@ -77,8 +77,11 @@ def get_ei(path_to_rep,species,date):
   tmin = tmin[ind]
   precp = precp[ind]
 
+  ei = np.zeros(name.shape[0])
+
   ti = get_ti(tmax,tmin,dv)
   mi = get_mi(precp,sm)
+
   ei = ti * mi
 
   for i in range(ei.shape[0]):
