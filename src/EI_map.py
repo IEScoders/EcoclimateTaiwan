@@ -9,7 +9,7 @@ import geojsoncontour
 import scipy as sp
 import scipy.ndimage
  
-df = pd.read_csv("2017-01_solenopsis_invicta.csv",index_col=0)
+df = pd.read_csv("../output_csv/solenopsis_invicta/2017-01_solenopsis_invicta.csv",index_col=0)
 def color_producer(el):
     if el < 0.2:
         return '#2b83ba'
@@ -109,4 +109,4 @@ geomap.add_child(fgv)
 plugins.Fullscreen(position='topright', force_separate_button=True).add_to(geomap)
 geomap.add_child(folium.LayerControl()) 
 # Plot the data
-geomap.save('test.html')
+geomap.save('../html/test.html')
