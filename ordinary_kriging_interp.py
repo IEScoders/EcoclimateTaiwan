@@ -35,8 +35,8 @@ def plot_interpolated_map(datafile='CWB_Stations_171226.csv',drop_index=[],data=
 
     e = np.random.rand(len(df['id']))
     df=df.assign(EI=pd.Series(e).values)
-    noEI = df[df['EI']<=0]
-    drop_index = np.array(noEI.index())
+    # noEI = df[df['EI']<=0]
+    # drop_index = np.array(noEI.index())
     df.drop(df.index[drop_index],inplace=True)
 
     print(df)
