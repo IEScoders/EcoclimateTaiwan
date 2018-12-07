@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[81]:
 
 
 from mpl_toolkits.basemap import Basemap
@@ -14,9 +14,12 @@ import pykrige.kriging_tools as kt
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import Path, PathPatch
+import os
 
 
-# In[42]:
+# In[82]:
+
+
 
 
 def plot_ei(df,path_to_rep,species,date):
@@ -41,6 +44,7 @@ def plot_ei(df,path_to_rep,species,date):
                 urcrnrlon=122.5,urcrnrlat=26, projection='merc', 
                 resolution='h',area_thresh=1000.,ax=ax)
     m.drawcoastlines() #draw coastlines on the map
+    
     x,y=m(xintrp,yintrp)
     lo,la = m(lons,lats)
     cs = ax.contourf(x,y,z1,
@@ -71,10 +75,10 @@ def plot_ei(df,path_to_rep,species,date):
     patch = PathPatch(path,facecolor='white', lw=0)
     ax.add_patch(patch)
 #    plt.title("EI at {}".format(date))
-    plt.savefig(path_to_rep + "result/{}_{}.png".format(species,date),bbox_inches="tight",dpi=300)
+    plt.savefig(path_to_rep  + "result/{}/{}_{}.png".format(species,date,species),bbox_inches="tight",dpi=300)
 
 
-# In[63]:
+# In[74]:
 
 
 def digit00(x):
@@ -182,25 +186,31 @@ def run_ei(path_to_rep,species,date):
 def main():
     global name
     global ei
-
+    sp = pd.read_csv("../species.csv")
+    spl = list(sp.scientific_name)
 #    date = '2017-02'
     path_to_rep = "../"
-    species = 'solenopsis_invicta'
-    for yy in range(2010,2018):
-        for mm in range(1,13):
-            date = "{}-{}".format(yy,digit00(mm))
-            print(date)
-    #            str         str      
+#    species = 'achatina_fulica'
+    for species in spl:
+        path = path_to_rep + "result/{}".format(species)
+        if not os.path.exists(path):
+            os.mkdir(path)
+            for yy in range(2010,2018):
+                for mm in range(1,13):
+                    date = "{}-{}".format(yy,digit00(mm))
+                    print(date)
+            #            str         str      
 
-            name, ei = get_ei(path_to_rep,species,date)
-            eidt = run_ei(path_to_rep,species,date)
-            plot_ei(eidt,path_to_rep,date,species)
-            plt.show()
+                    name, ei = get_ei(path_to_rep,species,date)
+                    eidt = run_ei(path_to_rep,species,date)
+                    plot_ei(eidt,path_to_rep,species,date)
+#            plt.show()
+        else:
+            print(path + " exist.")
 
 
 
-
-# In[ ]:
+# In[79]:
 
 
 if __name__ == '__main__':
