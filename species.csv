@@ -1,0 +1,9 @@
+common_name_c,common_name_e,scientific_name,ps,sm_0,sm_1,sm_2,sm_3,dv_0,dv_1,dv_2,dv_3,predators,references,expert
+紅火蟻,red_imported_fire_ant,solenopsis_invicta,0,5,60,130,200,-12.3,3.6,40.6,45,,,
+非洲大蝸牛,giant_african_land_snail,achatina_fulica,0,5,60,130,200,0,18,30,45,euglandina_rosea,https://www.cabi.org/ISC/datasheet/2640,
+福壽螺,golden_apple_snail,pomacea_canaliculata,0,85,212,677,948,0,10,32,35,anas_platyrhynchos_domesticus;,,
+家鴨,domestic_duck,anas_platyrhynchos_domesticus,1,85,212,315,441,0,10,30,35,,,
+南方小花蝽,orius_flower_bug,orius_strigicollis,1,85,212,315,441,15,25,30,35,,http://ir.tari.gov.tw:8080/bitstream/345210000/3283/2/publication_no142_06.pdf; https://baike.baidu.com/item/%E5%8D%97%E6%96%B9%E5%B0%8F%E8%8A%B1%E8%9D%BD,��@��
+草蛉,green_lacewing,mallada_basalis,1,85,212,315,441,8,25,28,32,,http://farmer.iyard.org/pps/47/47-1-01.pdf; https://www.baphiq.gov.tw/Publish/plant_protect_pic_4/04PDF/04-04-2.pdf,
+玫瑰蝸牛,rosy_predator_snail,euglandina_rosea,1,85,212,315,441,0,10,32,35,,https://www.cabi.org/ISC/datasheet/23113,
+中國梨木蝨,chinese_pear_psyllid,cacopsylla_chinensis,0,85,212,315,441,4.4,10,30,35,orius_strigicollis; mallada_basalis,http://tiasd.tfri.gov.tw/renew/specie/2323; https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E6%A2%A8%E6%9C%A8%E8%99%B1; https://ecommons.cornell.edu/bitstream/handle/1813/43114/pear-psylla-FS-NYSIPM.pdf?sequence=1,�i�Q�s
