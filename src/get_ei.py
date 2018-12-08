@@ -37,6 +37,7 @@ def get_ti(td,tn,dv):
         else:
             iq = np.nan
         ih = min( 1 - ( max(0, hi_temp - dv[2]) / (dv[3] - dv[2])) , 1)
+        ih = max(0, ih)
         ti[i] = iq * ih
     return ti
 
@@ -65,7 +66,6 @@ def get_ei(path_to_rep,species,date):
   raw_data = temp_max.merge(temp_min,left_on='name',right_on='name')
   raw_data = raw_data.merge(precp,left_on='name',right_on='name')
 
-  param = {}
   name = np.array(raw_data['name'])
   tmax = np.array(raw_data[date+'_x'])
   tmin = np.array(raw_data[date+'_y'])
@@ -77,15 +77,7 @@ def get_ei(path_to_rep,species,date):
   tmin = tmin[ind]
   precp = precp[ind]
 
-  ei = np.zeros(name.shape[0])
-
-  ti = get_ti(tmax,tmin,dv)
-  mi = get_mi(precp,sm)
-
-  ei = ti * mi
-
-  for i in range(ei.shape[0]):
-    print ('%s %6.2f %6.2f %6.2f' %(name[i],ei[i],tmax[i],precp[i]))
+  ei = get_ti(tmax,tmin,dv) * get_mi(precp,sm)
 
   return name, ei
 
@@ -95,10 +87,14 @@ def main():
     path_to_rep = sys.argv[1]
     species = 'solenopsis_invicta'
 
-    #            str         str      
-    name, ei = get_ei(path_to_rep,species,date)
+    ei = {}
+    for i in range(12):
+      date = '2017-%2.2d'%(i+1)
+      name, ei[date] = get_ei(path_to_rep,species,date)
 
-
+      ind = (ei[date] < 0.)
+      if (ei[date][ind].shape[0] > 0):
+        print (mo, name[ind],ei[date][ind])
 
 
 if __name__ == '__main__':
