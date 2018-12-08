@@ -89,6 +89,10 @@ def main():
 
     name, ei = get_ei(path_to_rep,species,date)
 
+    ind = (ei[mo] < 0.)
+    if (ei[mo][ind].shape[0] > 0):
+      print (mo, name[ind],ei[mo][ind])
+
 
 if __name__ == '__main__':
 
