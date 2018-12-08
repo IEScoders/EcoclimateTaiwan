@@ -87,13 +87,14 @@ def main():
     path_to_rep = sys.argv[1]
     species = 'solenopsis_invicta'
 
+    ei = {}
     for i in range(12):
       date = '2017-%2.2d'%(i+1)
-      name, ei = get_ei(path_to_rep,species,date)
+      name, ei[date] = get_ei(path_to_rep,species,date)
 
-      ind = (ei[mo] < 0.)
-      if (ei[mo][ind].shape[0] > 0):
-        print (mo, name[ind],ei[mo][ind])
+      ind = (ei[date] < 0.)
+      if (ei[date][ind].shape[0] > 0):
+        print (mo, name[ind],ei[date][ind])
 
 
 if __name__ == '__main__':
