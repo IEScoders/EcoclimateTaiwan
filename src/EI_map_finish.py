@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[16]:
 
 
 import numpy as np
@@ -26,7 +26,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 
-# In[2]:
+# In[17]:
 
 
 def tw_bound():
@@ -34,7 +34,7 @@ def tw_bound():
     return [[x,y] for x,y in zip(df[0],df[1])]
 
 
-# In[14]:
+# In[18]:
 
 
 def color_producer1(el):
@@ -63,14 +63,11 @@ def color_producer2(el):
     
 def add_layer(df,text,cc): 
     if cc == 1:
-        colors = ["#FFFFFF", "#AAAAFF", "#6666FF","#6666FF", "#6666FF","#6666FF",
-          "#0000FF","#0000FF","#0000FF","#0000FF","#0000FF"]
+        colors = ["#FFFFFF","#CCCCFF", "#AAAAFF", "#6666FF","#0000FF"]
     elif cc == 2:
-        colors = ["#FFFFFF", "#FFAAAA", "#FF6666","#FF6666", "#FF6666","#FF6666",
-          "#FF0000","#FF0000","#FF0000","#FF0000","#FF0000"] 
+        colors = ["#FFFFFF","#FFCCCC", "#FFAAAA", "#FF6666","#FF0000"] 
     elif cc == 3:
-        colors = ["#FFFFFF", "#AAFFAA", "#66FF66","#66FF66", "#66FF66","#66FF66",
-          "#00FF00","#00FF00","#00FF00","#00FF00","#00FF00"] 
+        colors = ["#FFFFFF","#CCFFCC", "#AAFFAA", "#66FF66","#00FF00"] 
     polygon = Polygon(tw)
     lons = np.asarray(df.long.tolist())
     lats = np.asarray(df.lat.tolist())
@@ -91,8 +88,7 @@ def add_layer(df,text,cc):
             if not polygon.contains(point):
                 mtw[i][j] = 1        
     z_mesh = np.ma.masked_where(mtw == 1, z_mesh)    
-    
-    contourf = plt.contourf(x_mesh, y_mesh, z_mesh, levels, alpha=0.8, colors=colors, linestyles='None', vmin=vmin, vmax=vmax)
+    contourf = plt.contourf(x_mesh, y_mesh, z_mesh, levels=[-0.2,0.01,0.1,0.2,0.6,1.2], alpha=0.8, colors=colors, linestyles='None', vmin=-0.2, vmax=1.2)
     global geojson
     geojson = geojsoncontour.contourf_to_geojson(
         contourf=contourf,
@@ -113,12 +109,12 @@ def add_layer(df,text,cc):
 
 
 
-# In[15]:
+# In[19]:
 
 
 def add_station(df):
     features = []
-    for time in list(set(df.Time))[0:5]:
+    for time in list(set(df.Time)):
         dft = df[df.Time == time]
         long,lat,EI = list(dft.long),list(dft.lat),list(dft.EI)
         for i in range(len(dft)):
@@ -148,7 +144,7 @@ def add_station(df):
     return features    
 
 
-# In[16]:
+# In[20]:
 
 
 def add_dictime(geojson,time):
@@ -178,13 +174,13 @@ def add_dictime_ref(geojson,time):
     return t
 
 
-# In[17]:
+# In[21]:
 
 
 def get_list(df,cc,ref=False):
     tl = []
     
-    for time in list(set(df.Time))[0:5]:
+    for time in list(set(df.Time)):
         dft = df[df.Time == time]
         _,geojson = add_layer(dft,'',cc)
         if ref == False:
@@ -195,7 +191,7 @@ def get_list(df,cc,ref=False):
     return tl
 
 
-# In[70]:
+# In[22]:
 
 
 def makemap(lst):
@@ -208,7 +204,6 @@ def makemap(lst):
     cm     = branca.colormap.LinearColormap(colors, vmin=0, vmax=1).to_step(len(colors))
     cm.caption = 'EI value'
     geomap.add_child(cm)
-    levels,vmin, vmax = 10,0,1
     sp,*pred = lst
     dfsp = pd.read_csv("../output_csv/combine/{}.csv".format(sp))
     tl1 = get_list(dfsp,2)
@@ -216,11 +211,11 @@ def makemap(lst):
         pred1 = pd.read_csv("../output_csv/combine/{}.csv".format(pred[0]))
         tl2 =  get_list(pred1,1,ref=True)
         tl3 = []
-    elif len(pred) == 1:
+    elif len(pred) == 2:
         pred1 = pd.read_csv("../output_csv/combine/{}.csv".format(pred[0]))
         pred2 = pd.read_csv("../output_csv/combine/{}.csv".format(pred[1]))
         tl2 =  get_list(pred1,1,ref=True)
-        tl3 =  get_list(pred2,1,ref=True)
+        tl3 =  get_list(pred2,3,ref=True)
     else:
         tl2 = tl3 = []
     features = add_station(dfsp)
@@ -247,7 +242,7 @@ def makemap(lst):
     geomap.save('../html/{}.html'.format(sp))
 
 
-# In[ ]:
+# In[23]:
 
 
 if __name__ == '__main__':
@@ -256,7 +251,7 @@ if __name__ == '__main__':
     species = list(species_df.scientific_name)
     listsp = []
     for sp in species:
-        prel = species_df.predators[species_df.scientific_name == sp].to_string().split()
+        prel = species_df.predators[species_df.scientific_name == sp].to_string().replace(';','').split()
         if prel[1] != 'NaN':
             pre = prel[1:]
         else:
@@ -264,18 +259,4 @@ if __name__ == '__main__':
         listsp.append([sp]+pre)
     for lst in listsp:
         makemap(lst)
-
-
-# In[18]:
-
-
-# sp1,sp2 = 'orius_strigicollis','cacopsylla_chinensis'
-# df1 = pd.read_csv("../output_csv/combine/{}.csv".format(sp1))
-# df2 = pd.read_csv("../output_csv/combine/{}.csv".format(sp2))
-
-#df2 = pd.read_csv("../output_csv/combine/{}.csv".format(sp2))
-# df1 = df1[df1.long>120]
-# df1 = df1[df1['id'] != 'C0S730'][df1['id'] != '467620'][df1['id'] != '466950'][df1['id'] !='C0W170']
-# df2 = df2[df2.long>120]
-# df2 = df2[df2['id'] != 'C0S730'][df2['id'] != '467620'][df2['id'] != '466950'][df2['id'] !='C0W170']
 
