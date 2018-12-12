@@ -50,6 +50,16 @@ def get_ei(path_to_rep,species,date):
   data_precp = pd.read_csv(path_to_data+'precp.csv',encoding="UTF-8")
   data_species = pd.read_csv(path_to_rep+'species.csv',encoding="UTF-8")
 
+  station_file = 'CWB_Stations_171226.csv'
+  df=pd.read_csv(path_to_rep + station_file,delimiter=',')
+
+  raw_id = df['id']
+  raw_ele = df['ele']
+
+  st_ele = {}
+  for n, e in zip(raw_id, raw_ele):
+    st_ele[n] = e
+
 #  station_id = data_temp_max['id']
   temp_max = data_temp_max[['name',date]]
   temp_min = data_temp_min[['name',date]]
@@ -70,7 +80,14 @@ def get_ei(path_to_rep,species,date):
   tmax = np.array(raw_data[date+'_x'])
   tmin = np.array(raw_data[date+'_y'])
   precp = np.array(raw_data[date])
-  ind = (tmax>=-100) * (tmin>=-100) * (precp>=-100)
+
+  ele = np.zeros(name.shape)
+  for i, n in enumerate(name):
+    ele[i] = st_ele[n]
+
+  ind = (tmax>=0) *  (tmax<=40) * (precp>=-0)
+
+  ind = ind * (ele > 2000) * (tmin>=-15) + ind * (tmin > -10)
 
   name = name[ind]
   tmax = tmax[ind]
@@ -83,7 +100,7 @@ def get_ei(path_to_rep,species,date):
 
 def main():
 
-    date = '2017-12'
+    date = '2012-12'
     path_to_rep = sys.argv[1]
     species = 'solenopsis_invicta'
 
