@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[16]:
+# In[1]:
 
 
 import numpy as np
@@ -26,7 +26,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 
-# In[17]:
+# In[2]:
 
 
 def tw_bound():
@@ -34,7 +34,7 @@ def tw_bound():
     return [[x,y] for x,y in zip(df[0],df[1])]
 
 
-# In[18]:
+# In[45]:
 
 
 def color_producer1(el):
@@ -88,7 +88,7 @@ def add_layer(df,text,cc):
             if not polygon.contains(point):
                 mtw[i][j] = 1        
     z_mesh = np.ma.masked_where(mtw == 1, z_mesh)    
-    contourf = plt.contourf(x_mesh, y_mesh, z_mesh, levels=[-0.2,0.01,0.1,0.2,0.6,1.2], alpha=0.8, colors=colors, linestyles='None', vmin=-0.2, vmax=1.2)
+    contourf = plt.contourf(x_mesh, y_mesh, z_mesh, levels=[-0.2,0.01,0.1,0.2,0.6,1.2], alpha=0.9, colors=colors, linestyles='None', vmin=-0.2, vmax=1.2)
     global geojson
     geojson = geojsoncontour.contourf_to_geojson(
         contourf=contourf,
@@ -96,20 +96,20 @@ def add_layer(df,text,cc):
         ndigits=5,
         stroke_width=1,
         fill_opacity=0.5)
-    geoj = folium.GeoJson(
-        geojson,
-        style_function=lambda x: {
-            'color':     x['properties']['stroke'],
-            'weight':    x['properties']['stroke-width'],
-            'fillColor': x['properties']['fill'],
-            'opacity':   0.6,
-        })
-
+#     geoj = folium.GeoJson(
+#         geojson,
+#         style_function=lambda x: {
+#             'color':     x['properties']['stroke'],
+#             'weight':    x['properties']['stroke-width'],
+#             'fillColor': x['properties']['fill'],
+#             'opacity':   0.6,
+#         })
+    geoj = 'none'
     return geoj,geojson
 
 
 
-# In[19]:
+# In[46]:
 
 
 def add_station(df):
@@ -144,7 +144,7 @@ def add_station(df):
     return features    
 
 
-# In[20]:
+# In[47]:
 
 
 def add_dictime(geojson,time):
@@ -174,7 +174,7 @@ def add_dictime_ref(geojson,time):
     return t
 
 
-# In[21]:
+# In[48]:
 
 
 def get_list(df,cc,ref=False):
@@ -191,13 +191,14 @@ def get_list(df,cc,ref=False):
     return tl
 
 
-# In[22]:
+# In[ ]:
 
 
 def makemap(lst):
 
     geomap = folium.Map([23.75, 121], zoom_start=8, tiles="cartodbpositron")
     folium.TileLayer('stamenterrain').add_to(geomap)
+    folium.TileLayer('openstreetmap').add_to(geomap)
 
     colors = ["#FFFFFF", "#FFAAAA", "#FF6666","#FF6666", "#FF6666","#FF6666",
               "#FF0000","#FF0000","#FF0000","#FF0000"] 
@@ -236,13 +237,29 @@ def makemap(lst):
 
 
     plugins.Fullscreen(position='topright', force_separate_button=True).add_to(geomap)
-    geomap.add_child(folium.LayerControl())
     plugins.MiniMap().add_to(geomap)
+    plugins.MeasureControl(primary_length_unit='kilometers', 
+                         secondary_length_unit='meters', 
+                         primary_area_unit='hectares', 
+                         secondary_area_unit='sqmeters').add_to(geomap)
+    formatter = "function(num) {return L.Util.formatNum(num, 3) + ' º ';};"
 
+    plugins.MousePosition(
+        position='bottomleft',
+        separator=' | ',
+        empty_string='NaN',
+        lng_first=True,
+        num_digits=20,
+        prefix='Coordinates:',
+        lat_formatter=formatter,
+        lng_formatter=formatter
+    ).add_to(geomap)
+    geomap.add_child(folium.LayerControl(position="topleft"))
+#    return geomap
     geomap.save('../html/{}.html'.format(sp))
 
 
-# In[23]:
+# In[50]:
 
 
 if __name__ == '__main__':
@@ -250,7 +267,7 @@ if __name__ == '__main__':
     species_df = pd.read_csv("../species.csv")
     species = list(species_df.scientific_name)
     listsp = []
-    for sp in species:
+    for sp in species[2:]:
         prel = species_df.predators[species_df.scientific_name == sp].to_string().replace(';','').split()
         if prel[1] != 'NaN':
             pre = prel[1:]
@@ -258,5 +275,5 @@ if __name__ == '__main__':
             pre = []
         listsp.append([sp]+pre)
     for lst in listsp:
-        makemap(lst)
+        geomap = makemap(lst)
 
