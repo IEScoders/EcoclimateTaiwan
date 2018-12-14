@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[7]:
 
 
 import numpy as np
@@ -26,7 +26,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 
-# In[2]:
+# In[8]:
 
 
 def tw_bound():
@@ -34,7 +34,7 @@ def tw_bound():
     return [[x,y] for x,y in zip(df[0],df[1])]
 
 
-# In[45]:
+# In[9]:
 
 
 def color_producer1(el):
@@ -109,15 +109,20 @@ def add_layer(df,text,cc):
 
 
 
-# In[46]:
+# In[10]:
 
 
-def add_station(df):
+def add_station(df,sp):
     features = []
     for time in list(set(df.Time)):
         dft = df[df.Time == time]
-        long,lat,EI = list(dft.long),list(dft.lat),list(dft.EI)
+        long,lat,EI,stal = list(dft.long),list(dft.lat),list(dft.EI), list(dft.id)
         for i in range(len(dft)):
+            sta = stal[i]
+            popup = """Station id: {}
+<img src="https://raw.githubusercontent.com/nghia1991ad/EIsta/master/{}/{}.jpg" width="300" height="250"></br>
+EI value: {:.2f}
+"""
             features.append(
                 {
                 'type': 'Feature',
@@ -129,7 +134,7 @@ def add_station(df):
                 },
                 'properties': {
                     'time': time,
-                    'popup': "EI value: {:.2f}".format(float(EI[i])),
+                    'popup': popup.format(sta,sp,sta,float(EI[i])),
                     'icon': 'circle',
                     'iconstyle': {
                         'fillColor': color_producer2(EI[i]),
@@ -144,7 +149,7 @@ def add_station(df):
     return features    
 
 
-# In[47]:
+# In[11]:
 
 
 def add_dictime(geojson,time):
@@ -174,7 +179,7 @@ def add_dictime_ref(geojson,time):
     return t
 
 
-# In[48]:
+# In[12]:
 
 
 def get_list(df,cc,ref=False):
@@ -191,7 +196,7 @@ def get_list(df,cc,ref=False):
     return tl
 
 
-# In[ ]:
+# In[13]:
 
 
 def makemap(lst):
@@ -219,7 +224,7 @@ def makemap(lst):
         tl3 =  get_list(pred2,3,ref=True)
     else:
         tl2 = tl3 = []
-    features = add_station(dfsp)
+    features = add_station(dfsp,sp)
     FC = tl1 + tl2 + tl3 + features
     plugins.TimestampedGeoJson(
         {
@@ -259,7 +264,7 @@ def makemap(lst):
     geomap.save('../html/{}.html'.format(sp))
 
 
-# In[50]:
+# In[15]:
 
 
 if __name__ == '__main__':
@@ -267,7 +272,7 @@ if __name__ == '__main__':
     species_df = pd.read_csv("../species.csv")
     species = list(species_df.scientific_name)
     listsp = []
-    for sp in species[2:]:
+    for sp in species:
         prel = species_df.predators[species_df.scientific_name == sp].to_string().replace(';','').split()
         if prel[1] != 'NaN':
             pre = prel[1:]
