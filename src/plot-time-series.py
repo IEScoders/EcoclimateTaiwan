@@ -38,11 +38,12 @@ def df_month(df,station):
 
 
 def plot_ts(species,station):
+    print("Now making figure for {} {}".format(species,station))
     dfTemp = df_value("../analysis/temperature.csv",station)
     Tmean, Tstd = df_month(dfTemp,station)
-    dfTmin = df_value("../analysis/Tmin.csv",station)
+    dfTmin = df_value("../analysis/tmin.csv",station)
     Tminmean, Tminstd = df_month(dfTmin,station)
-    dfTmax = df_value("../analysis/Tmax.csv",station)
+    dfTmax = df_value("../analysis/tmax.csv",station)
     Tmaxmean, Tmaxstd = df_month(dfTmax,station)
 
     dfPrep = df_value("../analysis/precp.csv",station)
@@ -53,6 +54,7 @@ def plot_ts(species,station):
     a1 = plt.subplot(311)
     plt.errorbar(mm,EImean,EIstd,fmt="-go")
     plt.xticks(mm)
+    plt.ylim([-0.1,1.1])
     plt.ylabel("EI value")
     a2 = plt.subplot(312,sharex=a1)
     plt.errorbar(mm,Tmean,Tstd,fmt="-ro",label="Average Temp")
@@ -78,7 +80,7 @@ df = pd.read_csv("../species.csv")
 dfs = pd.read_csv("../output_csv/combine/achatina_fulica.csv")
 spl = list(set(df.scientific_name))
 stl = list(set(dfs.id))
-for sp in spl:
+for sp in spl[-3:]:
     for st in stl:
         plot_ts(sp,st)
 
